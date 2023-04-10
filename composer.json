@@ -11,6 +11,8 @@
         "doctrine/doctrine-bundle": "^2.9",
         "doctrine/doctrine-migrations-bundle": "^3.2",
         "doctrine/orm": "^2.14",
+        "gesdinet/jwt-refresh-token-bundle": "^1.1",
+        "lexik/jwt-authentication-bundle": "^2.18",
         "phpdocumentor/reflection-docblock": "^5.3",
         "phpstan/phpdoc-parser": "^1.18",
         "sensio/framework-extra-bundle": "^6.1",
@@ -24,6 +26,7 @@
         "symfony/framework-bundle": "6.2.*",
         "symfony/http-client": "6.2.*",
         "symfony/intl": "6.2.*",
+        "symfony/ldap": "6.2.*",
         "symfony/mailer": "6.2.*",
         "symfony/mime": "6.2.*",
         "symfony/monolog-bundle": "^3.0",
@@ -92,11 +95,13 @@
         }
     },
     "require-dev": {
+        "doctrine/doctrine-fixtures-bundle": "^3.4",
+        "fakerphp/faker": "^1.21",
         "phpunit/phpunit": "^9.5",
         "symfony/browser-kit": "6.2.*",
         "symfony/css-selector": "6.2.*",
         "symfony/debug-bundle": "6.2.*",
-        "symfony/maker-bundle": "^1.0",
+        "symfony/maker-bundle": "^1.48",
         "symfony/phpunit-bridge": "^6.2",
         "symfony/stopwatch": "6.2.*",
         "symfony/web-profiler-bundle": "6.2.*"
