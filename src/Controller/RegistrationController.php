@@ -16,15 +16,17 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class RegistrationController extends AbstractController
 {
-    #[Route('/inscription', name: 'app_register')]
+    #[Route('/inscription', name: 'security_register', methods: ['GET', 'POST'] )]
     public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, UserAuthenticatorInterface $userAuthenticator, UsersAuthenticator $authenticator, EntityManagerInterface $entityManager): Response
     {
         $user = new User();
+        $user->setRoles(array('ROLE_USER'));
+
         $form = $this->createForm(RegistrationFormType::class, $user);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // encode the plain password
+
             $user->setPassword(
                 $userPasswordHasher->hashPassword(
                     $user,
@@ -32,11 +34,10 @@ class RegistrationController extends AbstractController
                 )
             );
 
-            $user->setRoles(array('ROLE_USER'));
-
             $entityManager->persist($user);
             $entityManager->flush();
-            // do anything else you need here, like send an email
+            
+            $this->addFlash('success', 'Votre inscription a bien été prise en compte!');
 
             return $userAuthenticator->authenticateUser(
                 $user,

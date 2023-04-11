@@ -17,11 +17,21 @@ security:
             lazy: true
             provider: app_user_provider
             custom_authenticator: App\Security\UsersAuthenticator
+            form_login:
+                login_path: security_login
+                check_path: security_login
+                enable_csrf: true
             logout:
-                path: app_logout
+                path: security_logout
                 # where to redirect after logout
-                # target: app_any_route
+                target: security_login
 
+            # configure the form authentication as the entry point for unauthenticated users
+            entry_point: 'form_login'
+            remember_me:
+                secret:   '%kernel.secret%' # required
+                lifetime: 604800 # 1 week in seconds
+            
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#the-firewall
 
@@ -32,7 +42,7 @@ security:
     # Note: Only the *first* access control that matches will be used
     access_control:
         # - { path: ^/admin, roles: ROLE_ADMIN }
-        # - { path: ^/profile, roles: ROLE_USER }
+        # - { path: ^/profil, roles: ROLE_USER }
 
 when@test:
     security:
