@@ -16,7 +16,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 
-#[Route('/profile', name: 'profil_')]
+#[Route('/profil', name: 'profil_')]
 class ProfilController extends AbstractController
 {
     
@@ -24,36 +24,38 @@ class ProfilController extends AbstractController
     {
     }
 
-    #[IsGranted('ROLE_ADMIN')]
-    #[Route('/', name: 'index')]
-    public function index(): Response
+    #[Security("is_granted('ROLE_ADMIN')")]
+    #[Route('/', name: 'index', methods: ["GET"])]
+    public function index(UserRepository $userRepository): Response
     {
         return $this->render('profil/index.html.twig', [
-            'controller_name' => 'ProfilController',
+            'users' => $userRepository->findAll(),
         ]);
     }
 
-    #[Security("is_granted('ROLE_USER') and user === this.getUser()")]
-    #[Route('/{id}/moncompte', name: 'show', requirements: ['id' => '\d+'], methods: ["GET"])]
+    #[Security("is_granted('ROLE_USER')")]
+    #[Route('/{id}', name: 'show', requirements: ['id' => '\d+'], methods: ["GET"])]
     public function show(User $user): Response
     {
-        return $this->render('user/show.html.twig', [
+        return $this->render('profil/show.html.twig', [
             'user' => $user,
         ]);
     }
 
-    #[Security("is_granted('ROLE_USER') and user === this.getUser()")]
+    /**
+     * @param Request $request
+     * @param User $user
+     * 
+     * @return Response
+     */
+    #[Security("is_granted('ROLE_USER')")]
     #[Route('/{id}/edite-compte', name: 'edit',  methods: ['GET', 'POST'])]
     public function edit(Request $request, User $user): Response
-    {
-        if( $request->attributes->get('_route') == 'profil_edit' && $this->getUser()->getId() != $user->getId()){
-            $this->denyAccessUnlessGranted('ROLE_ADMIN', null);
-        }
-        
+    {        
         $form = $this->createForm(UserType::class, $user);
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
+        if ( $form->isSubmitted() && $form->isValid() ) {
 
             $this->entityManager->persist($user);
             $this->entityManager->flush();
@@ -61,21 +63,22 @@ class ProfilController extends AbstractController
             $this->addFlash('success', 'Vos données ont bien été mise à jour.');
         }
 
-        return $this->render('profil/index.html.twig', [
-            'controller_name' => 'ProfilController',
+        return $this->render('profil/edit.html.twig', [
+            'form' => $form->createView(),
+            'user' => $user,
         ]);
     }
 
     /**
      * @param Request $request
      * @param User $user
-     * @param UserRepository $repository
+     * @param UserRepository $userRepository
      * @param UserPasswordHasherInterface $encoder
      * 
      * @return Response
      */
     #[Route('/{id}/newpass', name: 'edit_pass', methods: ['GET', 'POST'])]
-    public function editPassword(Request $request, User $user,UserRepository $repository, UserPasswordHasherInterface $encoder): Response
+    public function editPassword(Request $request, User $user,UserRepository $userRepository, UserPasswordHasherInterface $encoder): Response
     {
         $pass = new Password();
         $form = $this->createForm(ChangePassType::class, $pass);
@@ -91,7 +94,7 @@ class ProfilController extends AbstractController
                     $form->get('plainPassword')->getData()
                 );
 
-                $repository->upgradePassword($user, $encodedPassword);
+                $userRepository->upgradePassword($user, $encodedPassword);
                 $this->addFlash('success', "Votre mot de passe a bien été mis à jour.");
 
             } else {
@@ -101,11 +104,19 @@ class ProfilController extends AbstractController
             return $this->redirectToRoute('edit_pass', ['id' => $user->getId(),]);
         }
 
-        return $this->render('user/pass.html.twig', [
+        return $this->render('profil/pass.html.twig', [
             'form' => $form->createView(),
         ]);
     }
 
+    /**
+     * @param Request $request
+     * @param User $user
+     * @param UserRepository $userRepository
+     * @param UserPasswordHasherInterface $encoder
+     * 
+     * @return Response
+     */
     #[IsGranted('ROLE_ADMIN')]
     #[Route('/{id}/delete', name: 'delete', requirements: ['id' => '\d+'], methods: ['POST'])]
     public function delete(Request $request, User $user, UserRepository $userRepository): Response

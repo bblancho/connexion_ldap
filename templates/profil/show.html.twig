@@ -1,0 +1,46 @@
+{% extends 'base.html.twig' %}
+
+{% block title %} Utilisateur - {{ user.nom }} {% endblock %}
+
+{% block body %}
+    <h1> {{ user.nom }} </h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ user.id }}</td>
+            </tr>
+            <tr>
+                <th>Rôle</th>
+                <td>{{ user.roles|json_encode }}</td>
+            </tr>
+            <tr>
+                <th>Email</th>
+                <td>{{ user.email }}</td>
+            </tr>
+            <tr>
+                <th>Nom</th>
+                <td>{{ user.nom }}</td>
+            </tr>
+            <tr>
+                <th>Prénom</th>
+                <td>{{ user.prenom }}</td>
+            </tr>
+            <tr>
+                <th>Phone</th>
+                <td>{{ user.phone }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    {% if is_granted('ROLE_ADMIN') %}
+        <a class="btn btn-lg btn-primary my-3" href="{{ path('profil_index') }}"> Retour à l'accueil </a>
+    {% else %}
+        <a class="btn btn-lg btn-primary my-3" href="{{ path('app_home') }}"> Retour à l'accueil </a>
+    {% endif %}
+
+    <a class="btn btn-lg btn-info my-3" href="{{ path('profil_edit', {'id': user.id}) }}"> Modifier </a>
+
+    {{ include('profil/_delete_form.html.twig') }}
+{% endblock %}

@@ -2,12 +2,13 @@
 
 namespace App\Entity;
 
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\UserRepository;
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
@@ -20,19 +21,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(type: 'string', length: 180, unique: true)]
+    #[ORM\Column(type: Types::STRING, length: 180, unique: true)]
     private ?string $email = null;
 
-    #[ORM\Column(type: 'string', length: 180, nullable: true)]
+    #[ORM\Column(type: Types::STRING, length: 180, nullable: true)]
     private ?string $phone = null;
 
-    #[ORM\Column(type: 'string', length: 180)]
+    #[ORM\Column(type: Types::STRING, length: 180)]
     private ?string $nom = null;
 
-    #[ORM\Column(type: 'string', length: 180)]
+    #[ORM\Column(type: Types::STRING, length: 180)]
     private ?string $prenom = null;
 
-    #[ORM\Column]
+    #[ORM\Column(type: Types::JSON)]
     private array $roles = [];
 
     #[ORM\Column]

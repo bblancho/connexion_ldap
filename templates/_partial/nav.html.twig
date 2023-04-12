@@ -35,10 +35,16 @@
 			</ul>
 
             <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                {% if app.user %}
+                {% if is_granted('IS_AUTHENTICATED_FULLY') %}
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="#">Mon compte</a>
+                        <a class="nav-link active" aria-current="page" href="{{ path('profil_show', {id: app.user.id}) }}">Mon compte</a>
                     </li>
+
+					{% if is_granted('ROLE_ADMIN') %}
+						<li class="nav-item">
+							<a class="nav-link active" aria-current="page" href="{{ path('profil_index') }}">Les utilisateurs</a>
+						</li>
+					{% endif %}
                     <li class="nav-item">
                         <a class="nav-link active" aria-current="page" href="{{ path('security_logout') }}">Déconnexion</a>
                     </li>
