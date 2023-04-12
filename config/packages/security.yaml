@@ -31,6 +31,7 @@ security:
             remember_me:
                 secret:   '%kernel.secret%' # required
                 lifetime: 604800 # 1 week in seconds
+                signature_properties: ['password', 'updatedAt']
                 #Toujours activer Se souvenir de moi
                 #always_remember_me: true
             
@@ -43,8 +44,13 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
-        # - { path: ^/admin, roles: ROLE_ADMIN }
-        # - { path: ^/profil, roles: ROLE_USER }
+        - { path: ^/admin, roles: ROLE_ADMIN }
+        - { path: ^/profile, roles: ROLE_USER }
+        - { path: ^/login$, roles: PUBLIC_ACCESS  }
+        - { path: ^/register, roles: PUBLIC_ACCESS  }
+        - { path: ^/resetting, roles: PUBLIC_ACCESS  }
+        - { path: ^/reset-password, roles: PUBLIC_ACCESS  }
+        - { path: ^/, roles: ROLE_USER }
 
 when@test:
     security:
