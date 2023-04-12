@@ -50,17 +50,16 @@ class ProfilController extends AbstractController
      */
     #[Security("is_granted('ROLE_USER')")]
     #[Route('/{id}/edite-compte', name: 'edit',  methods: ['GET', 'POST'])]
-    public function edit(Request $request, User $user): Response
+    public function edit(Request $request, User $user, UserRepository $userRepository): Response
     {        
         $form = $this->createForm(UserType::class, $user);
         $form->handleRequest($request);
 
         if ( $form->isSubmitted() && $form->isValid() ) {
-
-            $this->entityManager->persist($user);
-            $this->entityManager->flush();
+            $userRepository->save($user, true);
             
             $this->addFlash('success', 'Vos données ont bien été mise à jour.');
+            return $this->redirectToRoute('profil_index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('profil/edit.html.twig', [
