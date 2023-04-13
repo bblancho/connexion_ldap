@@ -41,8 +41,6 @@ class ProfilController extends AbstractController
             throw $this->createNotFoundException('Aucun utilisateur trouvé.') ;
         }
 
-        $this->denyAccessUnlessGranted('ROLE_ADMIN');
-
         return $this->render('profil/show.html.twig', [
             'user' => $currentUser,
         ]);
@@ -109,7 +107,7 @@ class ProfilController extends AbstractController
         $form = $this->createForm(ChangePassType::class, $pass);
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
+        if ( $form->isSubmitted() && $form->isValid() ) {
 
             $checkPass = $encoder->isPasswordValid($currentUser, $pass->getOldPass());
 
