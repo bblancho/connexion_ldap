@@ -70,7 +70,7 @@ class ProfilController extends AbstractController
         $form->handleRequest($request);
 
         if ( $form->isSubmitted() && $form->isValid() ) {
-            $userRepository->save($user, true);
+            $userRepository->save($currentUser, true);
             
             $this->addFlash('success', 'Vos données ont bien été mise à jour.');
 
@@ -78,7 +78,7 @@ class ProfilController extends AbstractController
                 return $this->redirectToRoute('profil_index', [], Response::HTTP_SEE_OTHER);
             } 
 
-            return $this->redirectToRoute('profil_show', ['id' => $user->getId()], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('profil_show', ['id' => $currentUser->getId()], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('profil/edit.html.twig', [
@@ -111,22 +111,22 @@ class ProfilController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
 
-            $checkPass = $encoder->isPasswordValid($user, $pass->getOldPass());
+            $checkPass = $encoder->isPasswordValid($currentUser, $pass->getOldPass());
 
             if ($checkPass === true) {
                 $encodedPassword = $encoder->hashPassword(
-                    $user,
+                    $currentUser,
                     $form->get('plainPassword')->getData()
                 );
 
-                $userRepository->upgradePassword($user, $encodedPassword);
+                $userRepository->upgradePassword($currentUser, $encodedPassword);
                 $this->addFlash('success', "Votre mot de passe a bien été mis à jour.");
 
             } else {
                 $this->addFlash('danger', "Erreur lors de la mise à jour du mot de passe.");
             }
 
-            return $this->redirectToRoute('edit_pass', ['id' => $user->getId(),]);
+            return $this->redirectToRoute('edit_pass', ['id' => $currentUser->getId(),]);
         }
 
         return $this->render('profil/pass.html.twig', [
