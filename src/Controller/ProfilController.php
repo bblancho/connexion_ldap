@@ -33,7 +33,7 @@ class ProfilController extends AbstractController
         ]);
     }
 
-    #[Security("is_granted('ROLE_USER') and user === currentUser ")]
+    #[Security("(is_granted('ROLE_USER') and user === currentUser) or is_granted('ROLE_ADMIN') ")]
     #[Route('/{id}', name: 'show', requirements: ['id' => '\d+'], methods: ["GET"])]
     public function show(User $currentUser): Response
     {
@@ -54,7 +54,7 @@ class ProfilController extends AbstractController
      * 
      * @return Response
      */
-    #[Security("is_granted('ROLE_USER') and user === currentUser ")]
+    #[Security("(is_granted('ROLE_USER') and user === currentUser) or is_granted('ROLE_ADMIN') ")]
     #[Route('/{id}/edite-compte', name: 'edit',  methods: ['GET', 'POST'])]
     public function edit(Request $request, User $currentUser, UserRepository $userRepository): Response
     {        
@@ -95,7 +95,7 @@ class ProfilController extends AbstractController
      * 
      * @return Response
      */
-    #[Security("is_granted('ROLE_USER') and user === currentUser ")]
+    #[Security("(is_granted('ROLE_USER') and user === currentUser) or is_granted('ROLE_ADMIN') ")]
     #[Route('/{id}/newpass', name: 'edit_pass', methods: ['GET', 'POST'])]
     public function editPassword(Request $request, User $currentUser,UserRepository $userRepository, UserPasswordHasherInterface $encoder): Response
     {
