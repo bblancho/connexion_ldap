@@ -33,12 +33,18 @@ class ProfilController extends AbstractController
         ]);
     }
 
-    #[Security("is_granted('ROLE_USER')")]
+    #[Security("is_granted('ROLE_USER') and user === currentUser ")]
     #[Route('/{id}', name: 'show', requirements: ['id' => '\d+'], methods: ["GET"])]
-    public function show(User $user): Response
+    public function show(User $currentUser): Response
     {
+        if ( !$currentUser ) {
+            throw $this->createNotFoundException('Aucun utilisateur trouvé.') ;
+        }
+
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+
         return $this->render('profil/show.html.twig', [
-            'user' => $user,
+            'user' => $currentUser,
         ]);
     }
 
@@ -48,23 +54,36 @@ class ProfilController extends AbstractController
      * 
      * @return Response
      */
-    #[Security("is_granted('ROLE_USER')")]
+    #[Security("is_granted('ROLE_USER') and user === currentUser ")]
     #[Route('/{id}/edite-compte', name: 'edit',  methods: ['GET', 'POST'])]
-    public function edit(Request $request, User $user, UserRepository $userRepository): Response
+    public function edit(Request $request, User $currentUser, UserRepository $userRepository): Response
     {        
-        $form = $this->createForm(UserType::class, $user);
+        if ( !$currentUser ) {
+            throw $this->createNotFoundException('Aucun utilisateur trouvé.') ;
+        }
+
+        // if( $this->getUser() !== $user ){
+        //     return $this->redirectToRoute('profil_show', ['id' => $this->getUser()->getId()], Response::HTTP_SEE_OTHER);
+        // }
+
+        $form = $this->createForm(UserType::class, $currentUser);
         $form->handleRequest($request);
 
         if ( $form->isSubmitted() && $form->isValid() ) {
             $userRepository->save($user, true);
             
             $this->addFlash('success', 'Vos données ont bien été mise à jour.');
-            return $this->redirectToRoute('profil_index', [], Response::HTTP_SEE_OTHER);
+
+            if ( $this->isGranted('ROLE_ADMIN') ) {
+                return $this->redirectToRoute('profil_index', [], Response::HTTP_SEE_OTHER);
+            } 
+
+            return $this->redirectToRoute('profil_show', ['id' => $user->getId()], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('profil/edit.html.twig', [
             'form' => $form->createView(),
-            'user' => $user,
+            'user' => $currentUser,
         ]);
     }
 
@@ -76,9 +95,16 @@ class ProfilController extends AbstractController
      * 
      * @return Response
      */
+    #[Security("is_granted('ROLE_USER') and user === currentUser ")]
     #[Route('/{id}/newpass', name: 'edit_pass', methods: ['GET', 'POST'])]
-    public function editPassword(Request $request, User $user,UserRepository $userRepository, UserPasswordHasherInterface $encoder): Response
+    public function editPassword(Request $request, User $currentUser,UserRepository $userRepository, UserPasswordHasherInterface $encoder): Response
     {
+        if ( !$currentUser ) {
+            throw $this->createNotFoundException('Aucun utilisateur trouvé.') ;
+        }
+
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+
         $pass = new Password();
         $form = $this->createForm(ChangePassType::class, $pass);
         $form->handleRequest($request);
@@ -120,7 +146,7 @@ class ProfilController extends AbstractController
     #[Route('/{id}/delete', name: 'delete', requirements: ['id' => '\d+'], methods: ['POST'])]
     public function delete(Request $request, User $user, UserRepository $userRepository): Response
     {
-        if ( $this->isCsrfTokenValid('delete'.$user->getId(), $request->request->get('_token'))) {
+        if ( $this->isCsrfTokenValid('delete'.$user->getId(), $request->request->get('_token')) ) {
             
             $userRepository->remove($user, true);
             
