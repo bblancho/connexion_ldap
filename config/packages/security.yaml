@@ -9,17 +9,15 @@ security:
             entity:
                 class: App\Entity\User
                 property: email
-        #ldap_users:
-            # ldap:
-            #     service: app.ldap
-            #     base_dn: 'dc=example,dc=com'
-            #     search_dn: 'cn=read-only-admin,dc=example,dc=com'
-            #     search_password: 'password'
-            #     default_roles: ROLE_USER
-            #     uid_key: uid
-            #     extra_fields: ['email']
         ldap_users:
-            id: App\Security\CustomLdapUserProvider
+            ldap:
+                service: app.ldap
+                base_dn: 'dc=example,dc=com'
+                search_dn: 'cn=read-only-admin,dc=example,dc=com'
+                search_password: 'password'
+                default_roles: ROLE_USER
+                uid_key: uid
+                extra_fields: ['email']
 
     firewalls:
         dev:
@@ -39,7 +37,7 @@ security:
                 target: security_login
 
             # configure the form authentication as the entry point for unauthenticated users
-            entry_point: 'form_login_ldap'
+            entry_point: 'form_login'
             remember_me:
                 secret:   '%kernel.secret%' # required
                 lifetime: 604800 # 1 week in seconds

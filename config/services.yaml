@@ -4,22 +4,6 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
-    app_ldap_host_default: my-server
-    app_ldap_port_default: 389
-    app_ldap_encryption_default: tls
-
-    env(APP_LDAP_HOST): '%env(default:app_ldap_host_default:LDAP_HOST)%'
-    env(APP_LDAP_PORT): '%env(default:app_ldap_port_default:LDAP_PORT)%'
-    env(APP_LDAP_ENCRYPTION): '%env(default:app_ldap_encryption_default:LDAP_ENCRYPTION)%'
-
-    # fournisseur d'utilisateurs de type "LDAP" - personnalisé.
-    app_ldap_basedn_default: dc=example,dc=com
-    app_ldap_searchdn_default: "cn=read-only-admin,dc=example,dc=com"
-    app_ldap_searchpassword_default: password
-
-    env(APP_LDAP_BASEDN): '%env(default:app_ldap_basedn_default:LDAP_BASEDN)%'
-    env(APP_LDAP_SEARCHDN): '%env(default:app_ldap_searchdn_default:LDAP_SEARCHDN)%'
-    env(APP_LDAP_SEARCHPASSWORD): '%env(default:app_ldap_searchpassword_default:LDAP_SEARCHPASSWORD)%'
 
 services:
     # default configuration for services in *this* file
@@ -53,20 +37,16 @@ services:
         #             options:
         #                 protocol_version: 3
         #                 referrals: false
-    Symfony\Component\Ldap\Ldap:
+    app.ldap:
+        class: Symfony\Component\Ldap\Ldap
         arguments: ['@Symfony\Component\Ldap\Adapter\ExtLdap\Adapter']
     Symfony\Component\Ldap\Adapter\ExtLdap\Adapter:
         arguments:
-            -   host: '%env(resolve:APP_LDAP_HOST)%'
-                port: '%env(resolve:APP_LDAP_PORT)%'
-                encryption: '%env(resolve:APP_LDAP_ENCRYPTION)%'
+            -   host: ldap.forumsys.com
+                port: 389
+                encryption: none
                 options:
                     protocol_version: 3
                     referrals: false
-    # fournisseur d'utilisateurs de type "LDAP" - personnalisé.
-    App\Security\CustomLdapUserProvider:
-        arguments:
-            - '@Symfony\Component\Ldap\Ldap'
-            - '%env(resolve:APP_LDAP_BASEDN)%'
-            - '%env(resolve:APP_LDAP_SEARCHDN)%'
-            - '%env(resolve:APP_LDAP_SEARCHPASSWORD)%'
+
+    
