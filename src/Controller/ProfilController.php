@@ -60,10 +60,6 @@ class ProfilController extends AbstractController
             throw $this->createNotFoundException('Aucun utilisateur trouvé.') ;
         }
 
-        // if( $this->getUser() !== $user ){
-        //     return $this->redirectToRoute('profil_show', ['id' => $this->getUser()->getId()], Response::HTTP_SEE_OTHER);
-        // }
-
         $form = $this->createForm(UserType::class, $currentUser);
         $form->handleRequest($request);
 
