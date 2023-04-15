@@ -51,6 +51,21 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Document::class)]
     private $documents;
 
+    #[ORM\Column(length: 150, nullable: true)]
+    private ?string $googleId = null;
+
+    #[ORM\Column(length: 150, nullable: true)]
+    private ?string $avatar = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $hostDomain = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $gitHubId = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $fbId = null;
+
     public function __construct()
     {
         $this->documents = new ArrayCollection();
@@ -219,6 +234,66 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
+    }
+
+    public function getGoogleId(): ?string
+    {
+        return $this->googleId;
+    }
+
+    public function setGoogleId(?string $googleId): self
+    {
+        $this->googleId = $googleId;
+
+        return $this;
+    }
+
+    public function getAvatar(): ?string
+    {
+        return $this->avatar;
+    }
+
+    public function setAvatar(?string $avatar): self
+    {
+        $this->avatar = $avatar;
+
+        return $this;
+    }
+
+    public function getHostDomain(): ?string
+    {
+        return $this->hostDomain;
+    }
+
+    public function setHostDomain(?string $hostDomain): self
+    {
+        $this->hostDomain = $hostDomain;
+
+        return $this;
+    }
+
+    public function getGitHubId(): ?string
+    {
+        return $this->gitHubId;
+    }
+
+    public function setGitHubId(?string $gitHubId): self
+    {
+        $this->gitHubId = $gitHubId;
+
+        return $this;
+    }
+
+    public function getFbId(): ?string
+    {
+        return $this->fbId;
+    }
+
+    public function setFbId(?string $fbId): self
+    {
+        $this->fbId = $fbId;
+
+        return $this;
     }
 
 }
