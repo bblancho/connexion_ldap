@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+
+{% block title %} API GitHub - show {{ reposGit.name }} {% endblock %}
+
+{% block body %}
+<style>
+    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
+    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
+</style>
+
+<div class="example-wrapper">
+    <h1> Repositories {{ reposGit.name }}</h1>
+        
+    <ul>
+        
+        ID : {{ reposGit.id }} <br>
+        Nom complet : {{ reposGit.full_name }} <br>
+        Nom du repos : {{ reposGit.name }} <br>
+        Description : {{ reposGit.description ?? "Pas description" }} <hr>
+        
+    </ul>
+</div>
+{% endblock %}
