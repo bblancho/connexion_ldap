@@ -29,6 +29,12 @@
 					<label for="inputPassword" class="my-3">Mot de passe</label>
 					<input type="password" name="password" id="inputPassword" class="form-control" autocomplete="current-password" required>
 
+					<button type="button" class="btn btn-danger btn-lg my-3">
+						<a class="btn btn" href="https://www.dev-web.io/2022/03/07/symfony-6-sauthentifier-avec-google-facebook-github/"> <i class="fa-brands fa-google-plus"></i> </a>
+					</button>
+					
+
+
 					<input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
 
 					<div class="checkbox mb-3 my-3">
