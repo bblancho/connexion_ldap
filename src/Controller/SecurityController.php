@@ -2,19 +2,24 @@
 
 namespace App\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 class SecurityController extends AbstractController
 {
+    public function __construct(private UrlGeneratorInterface $urlGenerator)
+    {
+    }
+    
     #[Route(path: '/connexion', name: 'security_login')]
     public function login(AuthenticationUtils $authenticationUtils): Response
     {
-        // if ($this->getUser()) {
-        //     return $this->redirectToRoute('mon_compte');
-        // }
+        if ( $this->getUser() ) {
+            return $this->redirectToRoute('profil_show', ['id' => $this->getUser()->getId()], Response::HTTP_SEE_OTHER);
+        }
 
         // get the login error if there is one
         $error = $authenticationUtils->getLastAuthenticationError();
