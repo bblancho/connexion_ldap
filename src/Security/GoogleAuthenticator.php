@@ -46,28 +46,42 @@ class MygoogleUserAuthenticator extends OAuth2Authenticator implements Authentic
 
         return new SelfValidatingPassport(
             new UserBadge($accessToken->getToken(), function() use ($accessToken, $client) {
+                
                 /** @var GoogleUser $googleUser */
                 $googleUser = $client->fetchUserFromToken($accessToken);
+
+                dd($googleUser);
 
                 $email = $googleUser->getEmail();
 
                 // 1) have they logged in with googleUser before? Easy!
-                $existingUser = $this->entityManager->getRepository(User::class)->findOneBy(['googleUserId' => $googleUser->getId()]);
+                $existingUser = $this->entityManager->getRepository(User::class)->findOneBy(['googleId' => $googleUser->getId()]);
 
-                if ($existingUser) {
-                    return $existingUser;
+                //User doesnt exist, we create it !
+                if ( !$existingUser ) {
+
+                    // 2) do we have a matching user by email?
+                        $user = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $email]) ;
+
+                        // If $user doesn't exist in BDD
+                        if( !$user) {
+                            $existingUser = new User();
+
+                            $existingUser->setEmail( $googleUser->getEmail()) 
+                                ->setNom( $googleUser->getName()) 
+                                ->setPrenom("PP")
+                                ->setPhone("0147859685")
+                                ->setGoogleId($googleUser->getId())
+                                ->setHostDomain($googleUser->getHostedDomain())
+                                ->setRoles(array('ROLE_USER'))
+                            ;
+                        }
+
+                    $this->entityManager->persist($existingUser);
+                    $this->entityManager->flush();
                 }
 
-                // 2) do we have a matching user by email?
-                $user = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $email]);
-
-                // 3) Maybe you just want to "register" them by creating
-                // a User object
-                $user->setgoogleUserId($googleUser->getId());
-                $this->entityManager->persist($user);
-                $this->entityManager->flush();
-
-                return $user;
+                return $existingUser;
             })
         );
     }
@@ -75,7 +89,7 @@ class MygoogleUserAuthenticator extends OAuth2Authenticator implements Authentic
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
         // change "app_homepage" to some route in your app
-        $targetUrl = $this->router->generate('app_homepage');
+        $targetUrl = $this->router->generate('app_home');
 
         return new RedirectResponse($targetUrl);
     
