@@ -24,7 +24,7 @@ class GoogleController extends AbstractController
         // $clientRegistry = $this->get('knpu.oauth2.registry'); 
         return $this->clientRegistry
             ->getClient('google') // the name use in config/packages/knpu_oauth2_client.yaml 
-            ->redirect();  // 'public_profile', 'email' ,  the scopes you want to access
+            ->redirect([], []);  // 'public_profile', 'email' ,  the scopes you want to access
     }
 
     /**
