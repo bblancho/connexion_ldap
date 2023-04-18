@@ -2,8 +2,7 @@
 
 namespace App\Security;
 
-use App\Repository\UserRepository;
-use App\Entity\User; // your user entity
+use App\Entity\User; 
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -18,18 +17,16 @@ use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
 use Symfony\Component\Security\Http\EntryPoint\AuthenticationEntryPointInterface;
 use Symfony\Component\Security\Http\Authenticator\Passport\SelfValidatingPassport;
 
-class MygoogleUserAuthenticator extends OAuth2Authenticator implements AuthenticationEntrypointInterface
+class GoogleAuthenticator extends OAuth2Authenticator implements AuthenticationEntrypointInterface
 {
     private $clientRegistry;
     private $entityManager;
     private $router;
-    private $userRepository;
 
-    public function __construct(ClientRegistry $clientRegistry, EntityManagerInterface $entityManager, RouterInterface $router, UserRepository $userRepository)
+    public function __construct(ClientRegistry $clientRegistry, EntityManagerInterface $entityManager, RouterInterface $router)
     {
         $this->clientRegistry = $clientRegistry;
         $this->entityManager = $entityManager;
-        $this->userRepository = $userRepository;
         $this->router = $router;
     }
 
@@ -41,7 +38,7 @@ class MygoogleUserAuthenticator extends OAuth2Authenticator implements Authentic
 
     public function authenticate(Request $request): Passport
     {
-        $client = $this->clientRegistry->getClient('google');
+        $client = $this->getGoogleClient();
         $accessToken = $this->fetchAccessToken($client);
 
         return new SelfValidatingPassport(
@@ -88,6 +85,11 @@ class MygoogleUserAuthenticator extends OAuth2Authenticator implements Authentic
         );
     }
 
+    public function getGoogleClient()
+    {
+        return $this->clientRegistry->getClient('google') ;
+    }
+
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
         // change "app_homepage" to some route in your app
@@ -113,7 +115,7 @@ class MygoogleUserAuthenticator extends OAuth2Authenticator implements Authentic
     public function start(Request $request, AuthenticationException $authException = null): Response
     {
         return new RedirectResponse(
-            '/connect/', // might be the site, where users choose their oauth provider
+            '/connexion', // might be the site, where users choose their oauth provider
             Response::HTTP_TEMPORARY_REDIRECT
         );
     }
