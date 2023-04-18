@@ -56,29 +56,31 @@ class MygoogleUserAuthenticator extends OAuth2Authenticator implements Authentic
 
                 // 1) have they logged in with googleUser before? Easy!
                 $existingUser = $this->entityManager->getRepository(User::class)->findOneBy(['googleId' => $googleUser->getId()]);
+                // 2) do we have a matching user by email?
+                $user = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $email]) ;
 
                 //User doesnt exist, we create it !
-                if ( !$existingUser ) {
+                if ( !$existingUser && !$user ) {
+                    
+                    $existingUser = new User();
 
-                    // 2) do we have a matching user by email?
-                        $user = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $email]) ;
-
-                        // If $user doesn't exist in BDD
-                        if( !$user) {
-                            $existingUser = new User();
-
-                            $existingUser->setEmail( $googleUser->getEmail()) 
-                                ->setNom( $googleUser->getName()) 
-                                ->setPrenom("PP")
-                                ->setPhone("0147859685")
-                                ->setGoogleId($googleUser->getId())
-                                ->setHostDomain($googleUser->getHostedDomain())
-                                ->setRoles(array('ROLE_USER'))
-                            ;
-                        }
-
+                    $existingUser->setEmail( $googleUser->getEmail()) 
+                        ->setNom( $googleUser->getName()) 
+                        ->setPrenom("PP")
+                        ->setPhone("0147859685")
+                        ->setGoogleId($googleUser->getId())
+                        ->setHostDomain($googleUser->getHostedDomain())
+                        ->setRoles(array('ROLE_USER'))
+                    ;
+                    
                     $this->entityManager->persist($existingUser);
                     $this->entityManager->flush();
+
+                }elseif($user){
+                    $existingUser
+                        ->setGoogleId( $googleUser->getId() )
+                        ->setHostDomain($googleUser->getHostedDomain())
+                    ;
                 }
 
                 return $existingUser;
