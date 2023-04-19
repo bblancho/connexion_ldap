@@ -46,11 +46,10 @@ class GoogleAuthenticator extends OAuth2Authenticator implements AuthenticationE
                 
                 /** @var GoogleUser $googleUser */
                 $googleUser = $client->fetchUserFromToken($accessToken);
-
-                dd($googleUser);
-
+               // dd($googleUser);
+                
                 $email = $googleUser->getEmail();
-
+                
                 // 1) have they logged in with googleUser before? Easy!
                 $existingUser = $this->entityManager->getRepository(User::class)->findOneBy(['googleId' => $googleUser->getId()]);
                 // 2) do we have a matching user by email?
@@ -62,13 +61,15 @@ class GoogleAuthenticator extends OAuth2Authenticator implements AuthenticationE
                     $existingUser = new User();
 
                     $existingUser->setEmail( $googleUser->getEmail()) 
-                        ->setNom( $googleUser->getName()) 
-                        ->setPrenom("PP")
+                        ->setNom( $googleUser->getLastName()) 
+                        ->setPrenom( $googleUser->getFirstName() )
                         ->setPhone("0147859685")
-                        ->setGoogleId($googleUser->getId())
-                        ->setHostDomain($googleUser->getHostedDomain())
+                        ->setGoogleId( $googleUser->getId() )
+                        ->setHostDomain( $googleUser->getHostedDomain() )
                         ->setRoles(array('ROLE_USER'))
                     ;
+
+                    // dd($existingUser);
                     
                     $this->entityManager->persist($existingUser);
                     $this->entityManager->flush();
@@ -96,9 +97,6 @@ class GoogleAuthenticator extends OAuth2Authenticator implements AuthenticationE
         $targetUrl = $this->router->generate('app_home');
 
         return new RedirectResponse($targetUrl);
-    
-        // or, on success, let the request continue to be handled by the controller
-        //return null;
     }
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
