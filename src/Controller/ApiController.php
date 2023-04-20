@@ -52,7 +52,6 @@ class ApiController extends AbstractController
     #[Route('/api/show/{id}', name: 'app_api_show')]
     public function show($id): Response
     {
-        //https://api.github.com/repos/OWNER/REPO
         $url     = "https://api.github.com/repositories/{$id} "; 
         $method  = 'GET';
 
@@ -63,18 +62,13 @@ class ApiController extends AbstractController
 
         $statusCode = $response->getStatusCode() ;
 
-        if(  $statusCode == Response::HTTP_NOT_FOUND )
+        if( $statusCode == Response::HTTP_NOT_FOUND )
         {
             throw new NotFoundHttpException("No response") ;
         }
 
         // Get Content
-        $content = $response->getContent();
         $reposGit = $response->toArray();
-
-        
-
-        $contentType = $response->getHeaders()['content-type'][0];
 
         return $this->render('api/show.html.twig', compact(
             'reposGit',
