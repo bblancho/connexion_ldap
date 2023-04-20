@@ -5,6 +5,8 @@
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
     app.airlabs_key: '%env(APP_AIRLABS_KEY)%'
+    app.github_client_id: '%env(GITHUB_CLIENT_ID)%'
+    app.github_secret_id: '%env(GITHUB_CLIENT_SECRET)%'
 
 services:
     # default configuration for services in *this* file
