@@ -35,15 +35,21 @@ class GoogleController extends AbstractController
     #[Route('/connexion/google/check', name: 'connect_google_check')]
     public function connectCheckAction(Request $request)
     {
-        // ** if you want to *authenticate* the user, then
-        // leave this method blank and create a Guard authenticator
-
         $client = $this->clientRegistry->getClient('google') ;
 
         if( !$client ) {
             return new JsonResponse( array('status' => false, 'message' => "User not found !")) ;
         }else{
-            
+            // get the user directly
+            $user = $client->fetchUser();
+
+            // OR: get the access token and then user
+            $accessToken = $client->getAccessToken();
+            $user = $client->fetchUserFromToken($accessToken);
+
+            // access the underlying "provider" from league/oauth2-client
+            $provider = $client->getOAuth2Provider();
+
             return $this->redirectToRoute('app_home') ;
         }
         // try {
