@@ -57,6 +57,7 @@ class GoogleAuthenticator extends OAuth2Authenticator implements AuthenticationE
                 
                 // 1) have they logged in with googleUser before? Easy!
                 $existingUser = $this->entityManager->getRepository(User::class)->findOneBy(['googleId' => $googleUser->getId()]);
+                
                 // 2) do we have a matching user by email?
                 $user = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $email]) ;
 
@@ -71,7 +72,7 @@ class GoogleAuthenticator extends OAuth2Authenticator implements AuthenticationE
                         ->setPrenom( $googleUser->getFirstName() )
                         ->setPhone("0147859685")
                         ->setGoogleId( $googleUser->getId() )
-                        ->setPassword('')
+                        // ->setPassword('')
                         ->setHostDomain( $googleUser->getHostedDomain() )
                         ->setRoles(array('ROLE_USER'))
                     ;
@@ -88,6 +89,8 @@ class GoogleAuthenticator extends OAuth2Authenticator implements AuthenticationE
                     ->setHostDomain($googleUser->getHostedDomain())
                 ;
 
+                // dd($existingUser);
+                
                 return $existingUser;
             })
         );
