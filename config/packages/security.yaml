@@ -61,6 +61,7 @@ security:
         - { path: ^/connexion, roles: PUBLIC_ACCESS  }
         - { path: ^/inscription, roles: PUBLIC_ACCESS  }
         - { path: ^/reset-password, roles: PUBLIC_ACCESS  }
+        - { path: ^/dashboard, roles: ROLE_USER }
         - { path: ^/, roles: PUBLIC_ACCESS }
 
 when@test:

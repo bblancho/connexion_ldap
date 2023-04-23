@@ -33,6 +33,13 @@ class ProfilController extends AbstractController
         ]);
     }
 
+    #[Security("is_granted('ROLE_USER')")]
+    #[Route('/dashboard', name: 'index', methods: ["GET"])]
+    public function home(): Response
+    {
+        return $this->render('profil/dashboard.html.twig');
+    }
+
     #[Security("(is_granted('ROLE_USER') and user === currentUser) or is_granted('ROLE_ADMIN') ")]
     #[Route('/{id}', name: 'show', requirements: ['id' => '\d+'], methods: ["GET"])]
     public function show(User $currentUser): Response
