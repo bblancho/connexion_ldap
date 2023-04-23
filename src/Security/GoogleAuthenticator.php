@@ -30,6 +30,10 @@ class GoogleAuthenticator extends OAuth2Authenticator implements AuthenticationE
         $this->router = $router;
     }
 
+    /**
+     * Cette fonction indique si l'authentificateur prend en charge la requête donnée
+     * Elle doit renvoyer une valeur booléenne
+     */
     public function supports(Request $request): ?bool
     {
         // continue ONLY if the current ROUTE matches the check ROUTE
@@ -41,6 +45,11 @@ class GoogleAuthenticator extends OAuth2Authenticator implements AuthenticationE
         return $this->clientRegistry->getClient('google') ;
     }
 
+    /**
+     * Cette fonction obtient les identifiants d'authentification de la requête 
+     * et les renvoie dans un tableau ou une variable, 
+     * cela dépend de votre système
+     */
     public function authenticate(Request $request): Passport
     {
         $client      = $this->getGoogleClient();
@@ -97,13 +106,8 @@ class GoogleAuthenticator extends OAuth2Authenticator implements AuthenticationE
     }
 
     /**
-     * Called when authentication executed and was successful!
-     *
-     * This should return the Response sent back to the user, like a
-     * RedirectResponse to the last page they visited.
-     *
-     * If you return null, the current request will continue, and the user
-     * will be authenticated. This makes sense, for example, with an API.
+     * Cette fonction est appelée lorsque l'authentification a été exécutée avec succès.
+     * Il doit renvoyer un objet Response ou null.
      *
      * @param Request $request
      * @param \Symfony\Component\Security\Core\Authentication\Token\
@@ -114,12 +118,16 @@ class GoogleAuthenticator extends OAuth2Authenticator implements AuthenticationE
      */
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
-        // change "app_homepage" to some route in your app
         $targetUrl = $this->router->generate('app_home');
 
         return new RedirectResponse($targetUrl);
     }
 
+    /**
+     * Cette fonction est appelée lorsque l'authentification a été exécutée, 
+     * mais a échoué (par exemple mauvaise apikey).
+     * Il doit renvoyer un objet Response ou null
+     */
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
     {
         $message = strtr($exception->getMessageKey(), $exception->getMessageData());

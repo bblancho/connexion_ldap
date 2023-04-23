@@ -20,6 +20,7 @@ class GithubController extends AbstractController
     #[Route('/connexion/github', name: 'connect_github')]
     public function connectAction()
     {
+        //dd( $this->clientRegistry->getClient('github') );
 
         return $this->clientRegistry
             ->getClient('github') // the name use in config/packages/knpu_oauth2_client.yaml 

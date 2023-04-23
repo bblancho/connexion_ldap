@@ -26,9 +26,12 @@ security:
         main:
             lazy: true
             provider: app_user_provider
+            # Set as entry point the default authenticator of the application (LoginFormAuthenticator) to fix the issue
+            entry_point: App\Security\UsersAuthenticator
             custom_authenticator:
                 - App\Security\UsersAuthenticator
                 - App\Security\GoogleAuthenticator
+                - App\Security\GithubAuthenticator
             form_login:
                 login_path: security_login
                 check_path: security_login
@@ -37,9 +40,6 @@ security:
                 path: security_logout
                 # where to redirect after logout
                 target: security_login
-
-            # configure the form authentication as the entry point for unauthenticated users
-            entry_point: 'form_login'
             remember_me:
                 secret:   '%kernel.secret%' # required
                 lifetime: 604800 # 1 week in seconds
