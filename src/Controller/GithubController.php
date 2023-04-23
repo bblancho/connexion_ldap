@@ -20,15 +20,14 @@ class GithubController extends AbstractController
     #[Route('/connexion/github', name: 'connect_github')]
     public function connectAction()
     {
-        //Redirect to google
-        // $clientRegistry = $this->get('knpu.oauth2.registry'); 
-        // return $this->clientRegistry
-        //     ->getClient('google') // the name use in config/packages/knpu_oauth2_client.yaml 
-        //     ->redirect([], []);  // 'public_profile', 'email' ,  the scopes you want to access
-        $api_key = $this->getParameter('app.github_client_id') ;
-        $url="0";
 
-        return RedirectResponse("https://github.com/login/oauth/authorize?client_id={$api_key}".$url) ;
+        return $this->clientRegistry
+            ->getClient('github') // the name use in config/packages/knpu_oauth2_client.yaml 
+            ->redirect([], []);  // 'public_profile', 'email' ,  the scopes you want to access
+        // $api_key = $this->getParameter('app.github_client_id') ;
+        // $url="0";
+
+        // return RedirectResponse("https://github.com/login/oauth/authorize?client_id={$api_key}".$url) ;
     }
 
     /**
@@ -37,13 +36,15 @@ class GithubController extends AbstractController
      * in config/packages/knpu_oauth2_client.yaml
      */
     #[Route('/connexion/github/check', name: 'connect_github_check')]
-    public function connectCheckAction(Request $request, ClientRegistry $clientRegistry)
+    public function connectCheckAction()
     {
         // ** if you want to *authenticate* the user, then
         // leave this method blank and create a Guard authenticator
 
-        $client = $this->clientRegistry->getClient('google');
+        $client = $this->clientRegistry->getClient('github');
 
+        dd($client) ;
+        
         if( !$client ) {
             return new JsonResponse( array('status' => false, 'message' => "User not found !"));
         }else{

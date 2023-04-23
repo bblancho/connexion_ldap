@@ -36,9 +36,14 @@ class GoogleAuthenticator extends OAuth2Authenticator implements AuthenticationE
         return $request->attributes->get('_route') === 'connect_google_check' && $request->isMethod('GET') ;
     }
 
+    public function getGoogleClient()
+    {
+        return $this->clientRegistry->getClient('google') ;
+    }
+
     public function authenticate(Request $request): Passport
     {
-        $client = $this->getGoogleClient();
+        $client      = $this->getGoogleClient();
         $accessToken = $this->fetchAccessToken($client);
 
         return new SelfValidatingPassport(
@@ -58,6 +63,7 @@ class GoogleAuthenticator extends OAuth2Authenticator implements AuthenticationE
                 //User doesnt exist, we create it !
                 if ( !$existingUser && !$user ) {
                     
+                    /** @var User $existingUser */
                     $existingUser = new User();
 
                     $existingUser->setEmail( $googleUser->getEmail()) 
@@ -65,6 +71,7 @@ class GoogleAuthenticator extends OAuth2Authenticator implements AuthenticationE
                         ->setPrenom( $googleUser->getFirstName() )
                         ->setPhone("0147859685")
                         ->setGoogleId( $googleUser->getId() )
+                        ->setPassword('')
                         ->setHostDomain( $googleUser->getHostedDomain() )
                         ->setRoles(array('ROLE_USER'))
                     ;
@@ -74,23 +81,34 @@ class GoogleAuthenticator extends OAuth2Authenticator implements AuthenticationE
                     $this->entityManager->persist($existingUser);
                     $this->entityManager->flush();
 
-                }elseif($user){
-                    $existingUser
-                        ->setGoogleId( $googleUser->getId() )
-                        ->setHostDomain($googleUser->getHostedDomain())
-                    ;
                 }
+
+                $existingUser
+                    ->setGoogleId( $googleUser->getId() )
+                    ->setHostDomain($googleUser->getHostedDomain())
+                ;
 
                 return $existingUser;
             })
         );
     }
 
-    public function getGoogleClient()
-    {
-        return $this->clientRegistry->getClient('google') ;
-    }
-
+    /**
+     * Called when authentication executed and was successful!
+     *
+     * This should return the Response sent back to the user, like a
+     * RedirectResponse to the last page they visited.
+     *
+     * If you return null, the current request will continue, and the user
+     * will be authenticated. This makes sense, for example, with an API.
+     *
+     * @param Request $request
+     * @param \Symfony\Component\Security\Core\Authentication\Token\
+     *  $token
+     * @param string $providerKey The provider (i.e. firewall) key
+     *
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
         // change "app_homepage" to some route in your app
@@ -106,9 +124,11 @@ class GoogleAuthenticator extends OAuth2Authenticator implements AuthenticationE
         return new Response($message, Response::HTTP_FORBIDDEN);
     }
     
-   /**
+    /**
      * Called when authentication is needed, but it's not sent.
      * This redirects to the 'login'.
+     * 
+     * @return \Symfony\Component\HttpFoundation\Response
      */
     public function start(Request $request, AuthenticationException $authException = null): Response
     {

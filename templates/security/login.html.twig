@@ -25,9 +25,11 @@
 					<button type="button" class="btn btn-danger btn-lg my-3">
 						<a class="btn btn" href="{{ path('connect_google') }}"> <i class="fa-brands fa-google-plus"></i> </a>
 					</button>
+
+					<button type="button" class="btn btn-info btn-lg my-3">
+						<a class="btn btn" href="{{ path('connect_github') }}"> <i class="fa-brands fa-github"></i> </a>
+					</button>
 					
-
-
 					<input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
 
 					<div class="checkbox mb-3 my-3">
