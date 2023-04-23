@@ -42,24 +42,12 @@ class GithubController extends AbstractController
         // leave this method blank and create a Guard authenticator
 
         $client = $this->clientRegistry->getClient('github');
-
-        dd($client) ;
         
         if( !$client ) {
             return new JsonResponse( array('status' => false, 'message' => "User not found !"));
         }else{
             return $this->redirectToRoute('app_home');
         }
-        // try {
-        //     $user = $client->fetchUser();
-        //     // do something with all this new power!
-        //     // e.g. $name = $user->getFirstName();
-        //     dd($user); die;
         
-        // } catch (IdentityProviderException $e) {
-        //     // something went wrong!
-        //     // probably you should return the reason to the user
-        //     var_dump($e->getMessage()); die;
-        // }
     }
 }

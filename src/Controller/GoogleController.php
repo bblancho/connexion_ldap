@@ -33,17 +33,18 @@ class GoogleController extends AbstractController
      * in config/packages/knpu_oauth2_client.yaml
      */
     #[Route('/connexion/google/check', name: 'connect_google_check')]
-    public function connectCheckAction(Request $request, ClientRegistry $clientRegistry)
+    public function connectCheckAction(Request $request)
     {
         // ** if you want to *authenticate* the user, then
         // leave this method blank and create a Guard authenticator
 
-        $client = $this->clientRegistry->getClient('google');
+        $client = $this->clientRegistry->getClient('google') ;
 
         if( !$client ) {
-            return new JsonResponse( array('status' => false, 'message' => "User not found !"));
+            return new JsonResponse( array('status' => false, 'message' => "User not found !")) ;
         }else{
-            return $this->redirectToRoute('app_home');
+            
+            return $this->redirectToRoute('app_home') ;
         }
         // try {
         //     $user = $client->fetchUser();
