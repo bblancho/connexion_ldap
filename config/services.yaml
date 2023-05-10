@@ -28,7 +28,6 @@ services:
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
 
-
     # LDAP configuration
         # Add the app.ldap service definition
         # app.ldap:
@@ -42,14 +41,15 @@ services:
         #             options:
         #                 protocol_version: 3
         #                 referrals: false
-    app.ldap:
-        class: Symfony\Component\Ldap\Ldap
+    Symfony\Component\Ldap\Ldap:
         arguments: ['@Symfony\Component\Ldap\Adapter\ExtLdap\Adapter']
+        tags:
+            - ldap
     Symfony\Component\Ldap\Adapter\ExtLdap\Adapter:
         arguments:
             -   host: ldap.forumsys.com
                 port: 389
-                encryption: none
+                #encryption: tls
                 options:
                     protocol_version: 3
                     referrals: false

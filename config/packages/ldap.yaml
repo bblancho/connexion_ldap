@@ -1,11 +1,25 @@
 services:
-    app.ldap:
-        class: Symfony\Component\Ldap\Ldap
-        factory: ['Symfony\Component\Ldap\Ldap', 'create']
+    # app.ldap:
+    #     class: Symfony\Component\Ldap\Ldap
+    #     factory: ['Symfony\Component\Ldap\Ldap', 'create']
+    #     arguments:
+    #         -   'ext_ldap'
+    #         -   host: ldap.forumsys.com
+    #             port: 389
+    #             options:
+    #                 protocol_version: 3
+    #                 referrals: false
+
+    Symfony\Component\Ldap\Ldap:
+        arguments: ['@Symfony\Component\Ldap\Adapter\ExtLdap\Adapter']
+        tags: ['ldap']
+    Symfony\Component\Ldap\Adapter\ExtLdap\Adapter:
         arguments:
-            -   'ext_ldap'
             -   host: ldap.forumsys.com
                 port: 389
+                #encryption: tls
                 options:
                     protocol_version: 3
                     referrals: false
+# ...
+
