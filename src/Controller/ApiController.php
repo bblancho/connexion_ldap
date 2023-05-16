@@ -76,53 +76,86 @@ class ApiController extends AbstractController
         ));
     }
 
-    /**
-     * @Route("/department/{department}", name="app_department")
-     */
-    public function indexApi(string $department, CallApiService $callApiService, ChartBuilderInterface $chartBuilder): Response
+    #[Route('/api/covid/france/{date}', name: 'app_api_data_all_departement')]
+    public function showDataDepartements($date, CallApiService $apiCovid): Response
     {
-        $label = [];
-        $hospitalisation = [];
-        $rea = [];
+        $response = $apiCovid->getAllDataFranceByDate($date) ;
+        $responseDepartements = $apiCovid->getDataDepartmentsByDate($date) ;
 
-        for ($i=1; $i < 8; $i++) { 
-            $date = New DateTime('- '. $i .' day');
-            $datas = $callApiService->getAllDataByDate($date->format('Y-m-d'));
+        // dd($response) ;
 
-            foreach ($datas['allFranceDataByDate'] as $data) {
-                if( $data['nom'] === $department) {
-                    $label[] = $data['date'];
-                    $hospitalisation[] = $data['nouvellesHospitalisations'];
-                    $rea[] = $data['nouvellesReanimations'];
-                    break;
-                }
-            }
+        $statusCode = $response->getStatusCode() ;
+
+        if( $statusCode == Response::HTTP_NOT_FOUND )
+        {
+            throw new NotFoundHttpException("No response") ;
         }
 
-        $chart = $chartBuilder->createChart(Chart::TYPE_LINE);
-        $chart->setData([
-            'labels' => array_reverse($label),
-            'datasets' => [
-                [
-                    'label' => 'Nouvelles Hospitalisations',
-                    'borderColor' => 'rgb(255, 99, 132)',
-                    'data' => array_reverse($hospitalisation),
-                ],
-                [
-                    'label' => 'Nouvelles entrées en Réa',
-                    'borderColor' => 'rgb(46, 41, 78)',
-                    'data' => array_reverse($rea),
-                ],
-            ],
-        ]);
+        // Get Content
+        $dataFrance = $response->toArray();
+        $Alldepartments = $responseDepartements->toArray();
+        // dd($dataFrance) ;
 
-        $chart->setOptions([/* ... */]);
-
-        return $this->render('department/index.html.twig', [
-            'data' => $callApiService->getDepartmentData($department),
-            'chart' => $chart,
-        ]);
+        return $this->render('api/covid.html.twig', compact(
+            'dataFrance','Alldepartments'
+        ));
     }
+
+    /**
+     * @Route("/api/covid/department/{date}", name="api_department")
+     */
+    public function indexApi(string $date, CallApiService $callApiService) : Response
+    {
+         return $this->render('api/show.html.twig');
+    }
+
+    /**
+     * @Route("/api/covid/department/{date}", name="api_department")
+     */
+    // public function indexApi(string $date, CallApiService $callApiService, ChartBuilderInterface $chartBuilder): Response
+    // {
+    //     $label = [];
+    //     $hospitalisation = [];
+    //     $rea = [];
+
+    //     for ($i=1; $i < 8; $i++) { 
+    //         $date = New DateTime('- '. $i .' day');
+    //         $datas = $callApiService->getAllDataByDate($date->format('Y-m-d'));
+
+    //         foreach ($datas['allFranceDataByDate'] as $data) {
+    //             if( $data['nom'] === $department) {
+    //                 $label[] = $data['date'];
+    //                 $hospitalisation[] = $data['nouvellesHospitalisations'];
+    //                 $rea[] = $data['nouvellesReanimations'];
+    //                 break;
+    //             }
+    //         }
+    //     }
+
+    //     $chart = $chartBuilder->createChart(Chart::TYPE_LINE);
+    //     $chart->setData([
+    //         'labels' => array_reverse($label),
+    //         'datasets' => [
+    //             [
+    //                 'label' => 'Nouvelles Hospitalisations',
+    //                 'borderColor' => 'rgb(255, 99, 132)',
+    //                 'data' => array_reverse($hospitalisation),
+    //             ],
+    //             [
+    //                 'label' => 'Nouvelles entrées en Réa',
+    //                 'borderColor' => 'rgb(46, 41, 78)',
+    //                 'data' => array_reverse($rea),
+    //             ],
+    //         ],
+    //     ]);
+
+    //     $chart->setOptions([/* ... */]);
+
+    //     return $this->render('department/index.html.twig', [
+    //         'data' => $callApiService->getDepartmentData($department),
+    //         'chart' => $chart,
+    //     ]);
+    // }
 
 
     

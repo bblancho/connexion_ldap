@@ -14,24 +14,16 @@ class CallApiService
         $this->client = $client;
     }
 
-    public function getFranceData(): array
+    public function getAllDataFranceByDate($date)
     {
-        return $this->getApi('FranceLiveGlobalData');
+        // DD/MM/YYYY
+        return $this->getApi('france-by-date/'. $date);
     }
 
-    public function getAllData(): array
+    public function getDataDepartmentsByDate($date)
     {
-        return $this->getApi('AllLiveData');
-    }
-
-    public function getAllDataByDate($date): array
-    {
-        return $this->getApi('AllDataByDate?date=' . $date);
-    }
-
-    public function getDepartmentData($department): array
-    {
-        return $this->getApi('LiveDataByDepartement?Departement=' . $department);
+        // DD/MM/YYYY
+        return $this->getApi('departements-by-date/' . $date);
     }
 
     private function getApi(string $var)
@@ -41,14 +33,22 @@ class CallApiService
             'https://coronavirusapifr.herokuapp.com/data/' . $var
         );
 
-        return $response->toArray();
+        // return $response->toArray();
+        return $response ;
     }
 
-    // "https://coronavirusapifr.herokuapp.com/data/france-by-date/11-10-2021"
+    // Données détaillées par DÉPARTEMENTS pour une date précise
+        // "https://coronavirusapifr.herokuapp.com/data/departements-by-date/11-10-2021"
+    
+    // Données globales pour la FRANCE pour une date précise
+        // "https://coronavirusapifr.herokuapp.com/data/france-by-date/11-10-2021"
 
+    // Données disponibles pour un DÉPARTEMENT précis
+        // "https://coronavirusapifr.herokuapp.com/data/departement/rhone"
     /*
         tx_pos: 9.74,
         tx_incid: 183.4,
+        lib_dep: "Rhône",
         TO: 0.293198892843021,
         R: 1.37509386052026,
         rea: 1483,
