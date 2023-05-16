@@ -46,7 +46,7 @@
 							<h5 class="card-title">Nombre de cas confirmés</h5>
 							<p class="card-text">Nombre de cas confirmés depuis le début de la pandémie</p>
 						</div>
-                        <h3 class="card-footer bg-info text-dark mx-2 rounded-pill">{{ dataFrance.0.conf }}</h3>
+                        <h3 class="card-footer bg-info text-dark mx-2 rounded-pill">{{ dataFrance.0.conf_j1 }}</h3>
 					</div>
 				</div>
 			</div>
@@ -65,7 +65,8 @@
 								<h5 class="card-title">{{ department.lib_dep }}</h5>
 								<p class="card-text">Actuellement hospitalisée<span class="badge bg-secondary">{{ department.hosp }}</span></p>
 								<p class="card-text">Actuellement en réa<span class="badge bg-secondary">{{ department.rea }}</span></p>
-								<a href="{{ path('api_department', {'date': dataFrance.0.date  }) }}" class="btn btn-secondary" role="button" aria-pressed="true">Plus de chiffres</a>
+								<a href="{{ path('api_department', {'department': department.lib_dep  }) }}" class="btn btn-secondary" role="button" aria-pressed="true">Tous les chiffres</a>
+								<a href="{{ path('api_department_date', { 'department': department.lib_dep ,'date': dataFrance.0.date|date('d-m-Y') }) }}" class="btn btn-secondary" role="button" aria-pressed="true">Les chiffres du {{ dataFrance.0.date|date('d-m-Y') }} </a>
 							</div>
 						</div>
 					</div>

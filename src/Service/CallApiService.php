@@ -26,6 +26,16 @@ class CallApiService
         return $this->getApi('departements-by-date/' . $date);
     }
 
+    public function getDataByDepartmentByDate($departement, $date)
+    {
+        return $this->getApi('departement/'.$departement.'/'. $date);
+    }
+
+    public function getDataDepartment($departement)
+    {
+        return $this->getApi('departement/' . $departement);
+    }
+
     private function getApi(string $var)
     {
         $response = $this->client->request(
