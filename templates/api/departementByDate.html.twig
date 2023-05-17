@@ -6,9 +6,9 @@
 {% block body %}
 	<div class="px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
 		<h1 class="display-4">Les chiffres du COVID-19 -
-			{{ department.0.lib_dep }}</h1>
+			{{ department['nom'] }}</h1>
 		<p class="lead">Date d'actualisation :
-			{{ department.0.date|date('d-m-Y') }}</p>
+			{{ date|date('d-m-Y') }}</p>
 	</div>
 
 	<div class="row text-center">
@@ -18,7 +18,7 @@
 					<h4 class="my-0 fw-normal">Nombre d’hospitalisations</h4>
 				</div>
 				<div class="card-body">
-					<h1 class="card-title pricing-card-title">{{ department.0.hosp }}</h1>
+					<h1 class="card-title pricing-card-title">{{ department['hosp'] }}</h1>
 				</div>
 			</div>
 		</div>
@@ -28,7 +28,7 @@
 					<h4 class="my-0 fw-normal">Nombre de personnes réa</h4>
 				</div>
 				<div class="card-body">
-					<h1 class="card-title pricing-card-title">{{ department.0.rea }}</h1>
+					<h1 class="card-title pricing-card-title">{{ department['rea'] }}</h1>
 				</div>
 			</div>
 		</div>

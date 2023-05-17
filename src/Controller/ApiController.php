@@ -189,12 +189,14 @@ class ApiController extends AbstractController
      */
     public function apiDep($department, $date, CallApiService $apiCovid, ChartBuilderInterface $chartBuilder): Response
     {
-        $label = [];
+        $label_date = [];
         $hospitalisation = []; // courbe hospi
         $rea = []; // courbe Rea
+        $data_departement = [] ;
 
         $interval = new DateInterval('P1D');
         $date = new DateTime($date) ;
+        $current_date = $date->format('d-m-Y') ;
         
         // Les datas sur les 7 derniers jours
         for ($i=1; $i < 8; $i++) { 
@@ -207,6 +209,9 @@ class ApiController extends AbstractController
 
             foreach ($datas as $data) {
                 if( $data['lib_dep'] === $department) {
+                    $data_departement['nom'] = $data['lib_dep'];
+                    $data_departement['hosp'] = $data['hosp'];
+                    $data_departement['rea']  = $data['rea'];
                     $label_date[] = $data['date'];
                     $hospitalisation[] = $data['hosp'];
                     $rea[] = $data['rea'];
@@ -214,10 +219,12 @@ class ApiController extends AbstractController
                 }
             }
 
+            // dd($data_departement) ;
+
             // Création d'un graphique
             $chart = $chartBuilder->createChart(Chart::TYPE_LINE); // tableau de tyle line
             $chart->setData([
-                'labels' => array_reverse($label),
+                'labels' => array_reverse($label_date),
                 'datasets' => [
                     [
                         'label' => 'Nouvelles Hospitalisations',
@@ -235,16 +242,12 @@ class ApiController extends AbstractController
             $chart->setOptions([/* ... */]);
             
             $date->sub($interval) ; // on soustrait la date
-        }// fin for
-
-        dd('fin') ;        
+        }// fin for   
             
         return $this->render('api/departement.html.twig', [
-            'department' =>  $department ,
-            'nom_dep' => $nom_dep ,
-            'hospitalisation' => $hospitalisation ,
-            'rea' => $rea ,
-            'date' => $date
+            'department' =>  $data_departement ,
+            'graphique'  => $chart ,
+            'date' => $current_date ,
         ]);
     }
 
