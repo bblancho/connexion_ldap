@@ -2,10 +2,14 @@
 
 namespace App\Controller;
 
+use DateTime;
+use DateInterval;
 use App\Service\CallApiService;
+use Symfony\UX\Chartjs\Model\Chart;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Symfony\UX\Chartjs\Builder\ChartBuilderInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -79,7 +83,7 @@ class ApiController extends AbstractController
     #[Route('/api/covid/france/{date}', name: 'app_api_data_all_departement')]
     public function showDataDepartements($date, CallApiService $apiCovid): Response
     {
-        $response = $apiCovid->getAllDataFranceByDate($date) ;
+        $response = $apiCovid->getAllDataByDate($date) ;
         $responseDepartements = $apiCovid->getDataDepartmentsByDate($date) ;
 
         // dd($response) ;
@@ -170,6 +174,70 @@ class ApiController extends AbstractController
         // $chart->setOptions([/* ... */]);
 
         
+            
+        return $this->render('api/departement.html.twig', [
+            'department' =>  $department ,
+            'nom_dep' => $nom_dep ,
+            'hospitalisation' => $hospitalisation ,
+            'rea' => $rea ,
+            'date' => $date
+        ]);
+    }
+
+    /**
+     * @Route("/api/department/{department}/date/{date}", name="api_department_2")
+     */
+    public function apiDep($department, $date, CallApiService $apiCovid, ChartBuilderInterface $chartBuilder): Response
+    {
+        $label = [];
+        $hospitalisation = []; // courbe hospi
+        $rea = []; // courbe Rea
+
+        $interval = new DateInterval('P1D');
+        $date = new DateTime($date) ;
+        
+        // Les datas sur les 7 derniers jours
+        for ($i=1; $i < 8; $i++) { 
+            // echo $date->format('d-m-Y') ."<br/>";
+            
+            $response = $apiCovid->getDataDepartmentsByDate( $date->format('d-m-Y') );
+            // Get Content
+            $datas = $response->toArray();
+            // dd($datas) ;
+
+            foreach ($datas as $data) {
+                if( $data['lib_dep'] === $department) {
+                    $label_date[] = $data['date'];
+                    $hospitalisation[] = $data['hosp'];
+                    $rea[] = $data['rea'];
+                    break; // pour ne pas boucler sur toute les données
+                }
+            }
+
+            // Création d'un graphique
+            $chart = $chartBuilder->createChart(Chart::TYPE_LINE); // tableau de tyle line
+            $chart->setData([
+                'labels' => array_reverse($label),
+                'datasets' => [
+                    [
+                        'label' => 'Nouvelles Hospitalisations',
+                        'borderColor' => 'rgb(255, 99, 132)',
+                        'data' => array_reverse($hospitalisation),
+                    ],
+                    [
+                        'label' => 'Nouvelles entrées en Réa',
+                        'borderColor' => 'rgb(46, 41, 78)',
+                        'data' => array_reverse($rea),
+                    ],
+                ],
+            ]);
+
+            $chart->setOptions([/* ... */]);
+            
+            $date->sub($interval) ; // on soustrait la date
+        }// fin for
+
+        dd('fin') ;        
             
         return $this->render('api/departement.html.twig', [
             'department' =>  $department ,

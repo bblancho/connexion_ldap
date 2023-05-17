@@ -67,6 +67,8 @@
 								<p class="card-text">Actuellement en réa<span class="badge bg-secondary">{{ department.rea }}</span></p>
 								<a href="{{ path('api_department', {'department': department.lib_dep  }) }}" class="btn btn-secondary" role="button" aria-pressed="true">Tous les chiffres</a>
 								<a href="{{ path('api_department_date', { 'department': department.lib_dep ,'date': dataFrance.0.date|date('d-m-Y') }) }}" class="btn btn-secondary" role="button" aria-pressed="true">Les chiffres du {{ dataFrance.0.date|date('d-m-Y') }} </a>
+								<a href="{{ path('api_department_2', { 'department': department.lib_dep ,'date': dataFrance.0.date|date('d-m-Y') }) }}" class="btn btn-secondary" role="button" aria-pressed="true"> Data </a>
+
 							</div>
 						</div>
 					</div>

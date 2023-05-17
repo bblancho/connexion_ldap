@@ -14,7 +14,7 @@ class CallApiService
         $this->client = $client;
     }
 
-    public function getAllDataFranceByDate($date)
+    public function getAllDataByDate($date)
     {
         // DD/MM/YYYY
         return $this->getApi('france-by-date/'. $date);
